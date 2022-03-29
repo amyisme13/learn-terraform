@@ -44,20 +44,16 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"]
 }
 
+module "vpc" {
+  source = "./modules/vpc"
+
+  infra_env      = var.app_env
+  vpc_cidr_block = "10.1.0.0/16"
+}
 module "ec2_web" {
   source = "./modules/ec2"
 
   infra_env    = var.app_env
   infra_role   = "web"
   instance_ami = data.aws_ami.ubuntu.id
-}
-
-module "ec2_worker" {
-  source = "./modules/ec2"
-
-  infra_env                 = var.app_env
-  infra_role                = "worker"
-  instance_ami              = data.aws_ami.ubuntu.id
-  instance_type             = "t3.small"
-  instance_root_volume_size = 100
 }

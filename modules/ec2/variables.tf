@@ -1,7 +1,6 @@
 variable "infra_env" {
   type        = string
   description = "The environment of the infrastructure"
-  default     = "dev"
 }
 
 variable "infra_role" {
@@ -21,7 +20,7 @@ variable "instance_ami" {
 }
 
 variable "instance_root_volume_size" {
-  type        = string
+  type        = number
   description = "The size of the root volume"
-  default     = "20"
+  default     = 20
 }
