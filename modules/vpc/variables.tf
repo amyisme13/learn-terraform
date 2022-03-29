@@ -9,26 +9,17 @@ variable "vpc_cidr_block" {
   default     = "10.0.0.0/16"
 }
 
-variable "public_subnet_numbers" {
-  type = map(number)
-
-  description = "Map of AZ to a number that should be used for public subnets"
-
-  default = {
-    "ap-southeast-3a" = 1
-    "ap-southeast-3b" = 2
-    "ap-southeast-3c" = 3
-  }
+variable "azs" {
+  type        = list(string)
+  description = "The availability zones used to generate subnets"
 }
 
-variable "private_subnet_numbers" {
-  type = map(number)
+variable "public_subnets" {
+  type        = list(string)
+  description = "Subnets to be created for public traffic, one per az"
+}
 
-  description = "Map of AZ to a number that should be used for private subnets"
-
-  default = {
-    "ap-southeast-3a" = 4
-    "ap-southeast-3b" = 5
-    "ap-southeast-3c" = 6
-  }
+variable "private_subnets" {
+  type        = list(string)
+  description = "Subnets to be created for private traffic, one per az"
 }

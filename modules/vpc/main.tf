@@ -1,44 +1,21 @@
-resource "aws_vpc" "app_vpc" {
-  cidr_block = var.vpc_cidr_block
+module "vpc" {
+  source  = "terraform-aws-modules/vpc/aws"
+  version = "3.13.0"
+
+  name = "app-vpc-${var.infra_env}"
+  cidr = var.vpc_cidr_block
+
+  azs             = var.azs
+  public_subnets  = var.public_subnets
+  private_subnets = var.private_subnets
+
+  enable_nat_gateway = true
+  single_nat_gateway = true
 
   tags = {
     "Name"        = "app-vpc-${var.infra_env}"
     "Environment" = var.infra_env
     "Project"     = "Terra"
     "ManagedBy"   = "Terraform"
-  }
-}
-
-resource "aws_subnet" "public" {
-  for_each = var.public_subnet_numbers
-
-  vpc_id            = aws_vpc.app_vpc.id
-  availability_zone = each.key
-  cidr_block        = cidrsubnet(aws_vpc.app_vpc.cidr_block, 4, each.value)
-
-  tags = {
-    "Name"        = "app-public-subnet-${var.infra_env}"
-    "Environment" = var.infra_env
-    "Project"     = "Terra"
-    "Role"        = "public"
-    "ManagedBy"   = "Terraform"
-    "Subnet"      = "${each.key}-${each.value}"
-  }
-}
-
-resource "aws_subnet" "private" {
-  for_each = var.private_subnet_numbers
-
-  vpc_id            = aws_vpc.app_vpc.id
-  availability_zone = each.key
-  cidr_block        = cidrsubnet(aws_vpc.app_vpc.cidr_block, 4, each.value)
-
-  tags = {
-    "Name"        = "app-private-subnet-${var.infra_env}"
-    "Environment" = var.infra_env
-    "Project"     = "Terra"
-    "Role"        = "private"
-    "ManagedBy"   = "Terraform"
-    "Subnet"      = "${each.key}-${each.value}"
   }
 }

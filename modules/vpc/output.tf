@@ -1,23 +1,17 @@
 output "vpc_id" {
-  value = aws_vpc.app_vpc.id
+  value = module.vpc.vpc_id
 }
 
 output "vpc_cidr_block" {
-  value = aws_vpc.app_vpc.cidr_block
+  value = module.vpc.vpc_cidr_block
 }
 
-output "vpc_public_subnets" {
-  value = {
-    for subnet in aws_subnet.public :
-    subnet.id => subnet.cidr_block
-  }
+output "public_subnets" {
+  value = module.vpc.public_subnets
 }
 
-output "vpc_private_subnets" {
-  value = {
-    for subnet in aws_subnet.private :
-    subnet.id => subnet.cidr_block
-  }
+output "private_subnets" {
+  value = module.vpc.private_subnets
 }
 
 output "security_group_public" {

@@ -3,5 +3,5 @@ output "app_ip" {
 }
 
 output "app_instance" {
-  value = aws_instance.app_vm.id
+  value = module.ec2_instance.id
 }

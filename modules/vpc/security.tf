@@ -1,7 +1,7 @@
 # Public security group
 resource "aws_security_group" "public" {
   name   = "app-sg-${var.infra_env}-public"
-  vpc_id = aws_vpc.app_vpc.id
+  vpc_id = module.vpc.vpc_id
 
   tags = {
     "Name"        = "app-sg-${var.infra_env}-public"
@@ -55,7 +55,7 @@ resource "aws_security_group_rule" "public_in_https" {
 # Private security group
 resource "aws_security_group" "private" {
   name   = "app-sg-${var.infra_env}-private"
-  vpc_id = aws_vpc.app_vpc.id
+  vpc_id = module.vpc.vpc_id
 
   tags = {
     "Name"        = "app-sg-${var.infra_env}-private"
@@ -83,5 +83,5 @@ resource "aws_security_group_rule" "private_in" {
   from_port   = 0
   to_port     = 65535
   protocol    = "-1"
-  cidr_blocks = [aws_vpc.app_vpc.cidr_block]
+  cidr_blocks = [module.vpc.vpc_cidr_block]
 }
