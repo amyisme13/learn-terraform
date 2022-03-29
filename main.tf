@@ -49,13 +49,6 @@ data "aws_ami" "ubuntu" {
   owners = ["099720109477"]
 }
 
-module "vpc" {
-  source = "./modules/vpc"
-
-  infra_env      = var.app_env
-  vpc_cidr_block = "10.1.0.0/16"
-}
-
 module "ec2_web" {
   source = "./modules/ec2"
 
@@ -64,6 +57,7 @@ module "ec2_web" {
   instance_ami = data.aws_ami.ubuntu.id
 
   available_subnets = keys(module.vpc.vpc_public_subnets)
+  security_groups   = [module.vpc.security_group_public]
 }
 
 module "ec2_worker" {
@@ -74,10 +68,18 @@ module "ec2_worker" {
   instance_ami = data.aws_ami.ubuntu.id
 
   available_subnets = keys(module.vpc.vpc_private_subnets)
+  security_groups   = [module.vpc.security_group_private]
 
   create_eip = false
 
   tags = {
-    "Name" = "app-web-${var.app_env}"
+    "Name" = "app-worker-${var.app_env}"
   }
+}
+
+module "vpc" {
+  source = "./modules/vpc"
+
+  infra_env      = var.app_env
+  vpc_cidr_block = "10.1.0.0/16"
 }

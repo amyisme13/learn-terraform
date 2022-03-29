@@ -12,7 +12,8 @@ resource "aws_instance" "app_vm" {
     volume_type = "gp3"
   }
 
-  subnet_id = random_shuffle.subnets.result[0]
+  subnet_id              = random_shuffle.subnets.result[0]
+  vpc_security_group_ids = var.security_groups
 
   tags = merge(
     {

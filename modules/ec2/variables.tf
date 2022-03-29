@@ -30,6 +30,12 @@ variable "available_subnets" {
   description = "The subnets available to be used for ec2"
 }
 
+variable "security_groups" {
+  type        = list(string)
+  description = "The security groups to be used for ec2"
+  default     = []
+}
+
 variable "create_eip" {
   type        = bool
   description = "Whether to create an elastic IP address"
