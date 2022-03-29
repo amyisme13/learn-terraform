@@ -1,3 +1,8 @@
+resource "random_shuffle" "subnets" {
+  result_count = 1
+  input        = var.available_subnets
+}
+
 resource "aws_instance" "app_vm" {
   ami           = var.instance_ami
   instance_type = var.instance_type
@@ -7,8 +12,10 @@ resource "aws_instance" "app_vm" {
     volume_type = "gp3"
   }
 
+  subnet_id = random_shuffle.subnets.result[0]
+
   tags = {
-    "Name"        = "app-vm-${var.infra_env}"
+    "Name"        = "app-vm-${var.infra_env}-${var.infra_role}"
     "Environment" = var.infra_env
     "Role"        = var.infra_role
     "Project"     = "Terra"
@@ -20,7 +27,7 @@ resource "aws_eip" "app_eip" {
   vpc = true
 
   tags = {
-    "Name"        = "app-eip-${var.infra_env}"
+    "Name"        = "app-eip-${var.infra_env}-${var.infra_role}"
     "Environment" = var.infra_env
     "Role"        = var.infra_role
     "Project"     = "Terra"

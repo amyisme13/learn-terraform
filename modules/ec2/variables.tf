@@ -24,3 +24,8 @@ variable "instance_root_volume_size" {
   description = "The size of the root volume"
   default     = 20
 }
+
+variable "available_subnets" {
+  type        = list(string)
+  description = "The subnets available to be used for ec2"
+}

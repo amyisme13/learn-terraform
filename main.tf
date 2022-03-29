@@ -4,6 +4,11 @@ terraform {
       source  = "hashicorp/aws"
       version = "4.8.0"
     }
+
+    random = {
+      source  = "hashicorp/random"
+      version = "3.1.2"
+    }
   }
 
   backend "s3" {
@@ -50,10 +55,13 @@ module "vpc" {
   infra_env      = var.app_env
   vpc_cidr_block = "10.1.0.0/16"
 }
+
 module "ec2_web" {
   source = "./modules/ec2"
 
   infra_env    = var.app_env
   infra_role   = "web"
   instance_ami = data.aws_ami.ubuntu.id
+
+  available_subnets = keys(module.vpc.vpc_public_subnets)
 }
