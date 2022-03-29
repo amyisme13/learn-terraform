@@ -29,3 +29,15 @@ variable "available_subnets" {
   type        = list(string)
   description = "The subnets available to be used for ec2"
 }
+
+variable "create_eip" {
+  type        = bool
+  description = "Whether to create an elastic IP address"
+  default     = true
+}
+
+variable "tags" {
+  type        = map(string)
+  description = "Tags to apply to the ec2 instance"
+  default     = {}
+}

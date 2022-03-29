@@ -65,3 +65,19 @@ module "ec2_web" {
 
   available_subnets = keys(module.vpc.vpc_public_subnets)
 }
+
+module "ec2_worker" {
+  source = "./modules/ec2"
+
+  infra_env    = var.app_env
+  infra_role   = "worker"
+  instance_ami = data.aws_ami.ubuntu.id
+
+  available_subnets = keys(module.vpc.vpc_private_subnets)
+
+  create_eip = false
+
+  tags = {
+    "Name" = "app-web-${var.app_env}"
+  }
+}

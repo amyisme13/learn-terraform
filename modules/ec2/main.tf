@@ -14,16 +14,21 @@ resource "aws_instance" "app_vm" {
 
   subnet_id = random_shuffle.subnets.result[0]
 
-  tags = {
-    "Name"        = "app-vm-${var.infra_env}-${var.infra_role}"
-    "Environment" = var.infra_env
-    "Role"        = var.infra_role
-    "Project"     = "Terra"
-    "ManagedBy"   = "Terraform"
-  }
+  tags = merge(
+    {
+      "Name"        = "app-vm-${var.infra_env}-${var.infra_role}"
+      "Environment" = var.infra_env
+      "Role"        = var.infra_role
+      "Project"     = "Terra"
+      "ManagedBy"   = "Terraform"
+    },
+    var.tags
+  )
 }
 
 resource "aws_eip" "app_eip" {
+  count = (var.create_eip) ? 1 : 0
+
   vpc = true
 
   tags = {
@@ -36,6 +41,8 @@ resource "aws_eip" "app_eip" {
 }
 
 resource "aws_eip_association" "app_eip_assoc" {
+  count = (var.create_eip) ? 1 : 0
+
   instance_id   = aws_instance.app_vm.id
-  allocation_id = aws_eip.app_eip.id
+  allocation_id = aws_eip.app_eip[0].id
 }
