@@ -22,10 +22,9 @@ provider "aws" {
   region = "ap-southeast-3"
 }
 
-variable "app_env" {
-  type        = string
-  description = "The environment of the app"
-  default     = "dev"
+locals {
+  app_env = terraform.workspace == "default" ? "dev" : terraform.workspace
+  subnets = cidrsubnets("10.1.0.0/16", 4, 4, 4, 4, 4, 4)
 }
 
 data "aws_ami" "ubuntu" {
@@ -52,7 +51,7 @@ data "aws_ami" "ubuntu" {
 module "ec2_web" {
   source = "./modules/ec2"
 
-  infra_env    = var.app_env
+  infra_env    = local.app_env
   infra_role   = "web"
   instance_ami = data.aws_ami.ubuntu.id
 
@@ -63,7 +62,7 @@ module "ec2_web" {
 module "ec2_worker" {
   source = "./modules/ec2"
 
-  infra_env    = var.app_env
+  infra_env    = local.app_env
   infra_role   = "worker"
   instance_ami = data.aws_ami.ubuntu.id
 
@@ -73,18 +72,14 @@ module "ec2_worker" {
   create_eip = false
 
   tags = {
-    "Name" = "app-worker-${var.app_env}"
+    "Name" = "app-worker-${local.app_env}"
   }
-}
-
-locals {
-  subnets = cidrsubnets("10.1.0.0/16", 4, 4, 4, 4, 4, 4)
 }
 
 module "vpc" {
   source = "./modules/vpc"
 
-  infra_env      = var.app_env
+  infra_env      = local.app_env
   vpc_cidr_block = "10.1.0.0/16"
 
   azs             = ["ap-southeast-3a", "ap-southeast-3b", "ap-southeast-3c"]
