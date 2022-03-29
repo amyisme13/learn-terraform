@@ -17,7 +17,13 @@ provider "aws" {
   region = "ap-southeast-3"
 }
 
-data "aws_ami" "ubuntu_ami" {
+variable "app_env" {
+  type        = string
+  description = "The environment of the app"
+  default     = "dev"
+}
+
+data "aws_ami" "ubuntu" {
   most_recent = true
 
   filter {
@@ -38,34 +44,20 @@ data "aws_ami" "ubuntu_ami" {
   owners = ["099720109477"]
 }
 
-resource "aws_instance" "web_app" {
-  ami           = data.aws_ami.ubuntu_ami.id
-  instance_type = var.instance_type
+module "ec2_web" {
+  source = "./modules/ec2"
 
-  root_block_device {
-    volume_size = "20"
-  }
-
-  tags = {
-    "Name"        = "web-app-${var.app_env}"
-    "Environment" = var.app_env
-    "Project"     = "Terra"
-    "ManagedBy"   = "Terraform"
-  }
+  infra_env    = var.app_env
+  infra_role   = "web"
+  instance_ami = data.aws_ami.ubuntu.id
 }
 
-resource "aws_eip" "app_eip" {
-  vpc = true
+module "ec2_worker" {
+  source = "./modules/ec2"
 
-  tags = {
-    "Name"        = "app-eip-${var.app_env}"
-    "Environment" = var.app_env
-    "Project"     = "Terra"
-    "ManagedBy"   = "Terraform"
-  }
-}
-
-resource "aws_eip_association" "app_eip_assoc" {
-  instance_id   = aws_instance.web_app.id
-  allocation_id = aws_eip.app_eip.id
+  infra_env                 = var.app_env
+  infra_role                = "worker"
+  instance_ami              = data.aws_ami.ubuntu.id
+  instance_type             = "t3.small"
+  instance_root_volume_size = 100
 }
