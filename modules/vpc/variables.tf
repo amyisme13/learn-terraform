@@ -23,3 +23,8 @@ variable "private_subnets" {
   type        = list(string)
   description = "Subnets to be created for private traffic, one per az"
 }
+
+variable "database_subnets" {
+  type        = list(string)
+  description = "Subnets to be created for database traffic, one per az"
+}
